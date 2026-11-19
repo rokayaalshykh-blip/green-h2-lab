@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="GREEN H2 LAB - منصة تفاعلية لدراسة إنتاج الهيدروجين من المخلفات الزراعية باستخدام الطاقة الشمسية.">
+<title>GREEN H₂ LAB | Solar Waste-to-Hydrogen</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+--bg:#071510;
+--panel:#10251c;
+--panel2:#153126;
+--green:#36d68a;
+--mint:#9af5c5;
+--text:#f2fff7;
+--muted:#9bb7a6;
+--border:rgba(154,245,197,.14);
+--danger:#ff7777;
+--gold:#e6c66d;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+scroll-behavior:smooth;
+}
+
+body{
+font-family:'Cairo',sans-serif;
+background:var(--bg);
+color:var(--text);
+line-height:1.8;
+}
+
+button,input,select,textarea{
+font-family:inherit;
+}
+
+button{
+cursor:pointer;
+}
+
+a{
+text-decoration:none;
+color:inherit;
+}
+
+.container{
+width:min(1150px,92%);
+margin:auto;
+}
+
+header{
+position:sticky;
+top:0;
+z-index:100;
+background:rgba(7,21,16,.94);
+backdrop-filter:blur(15px);
+border-bottom:1px solid var(--border);
+}
+
+.nav{
+min-height:76px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:20px;
+}
+
+.logo{
+font-size:22px;
+font-weight:900;
+color:var(--mint);
+letter-spacing:1px;
+}
+
+.logo span{
+color:white;
+}
+
+nav{
+display:flex;
+gap:18px;
+align-items:center;
+flex-wrap:wrap;
+}
+
+nav a{
+font-size:13px;
+color:var(--muted);
+transition:.3s;
+}
+
+nav a:hover{
+color:var(--mint);
+}
+
+.hero{
+min-height:590px;
+display:grid;
+grid-template-columns:1.1fr .9fr;
+align-items:center;
+gap:50px;
+padding:75px 0;
+}
+
+.tag{
+display:inline-block;
+padding:7px 15px;
+border:1px solid rgba(54,214,138,.4);
+border-radius:30px;
+color:var(--mint);
+font-size:12px;
+margin-bottom:20px;
+}
+
+.hero h1{
+font-size:clamp(36px,5vw,63px);
+line-height:1.25;
+font-weight:900;
+}
+
+.hero h1 span{
+color:var(--green);
+}
+
+.hero p{
+color:var(--muted);
+margin:22px 0;
+max-width:600px;
+}
+
+.buttons{
+display:flex;
+gap:12px;
+flex-wrap:wrap;
+}
+
+.btn{
+border:0;
+background:var(--green);
+color:#06170e;
+padding:11px 22px;
+border-radius:10px;
+font-weight:800;
+transition:.3s;
+display:inline-block;
+}
+
+.btn:hover{
+transform:translateY(-3px);
+box-shadow:0 8px 25px rgba(54,214,138,.2);
+}
+
+.outline{
+background:transparent;
+color:var(--mint);
+border:1px solid var(--green);
+}
+
+.danger{
+background:#572626;
+color:white;
+}
+
+.hero-visual{
+height:400px;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.orbit{
+width:300px;
+height:300px;
+border:1px solid rgba(54,214,138,.4);
+border-radius:50%;
+position:absolute;
+animation:rotate 16s linear infinite;
+}
+
+.orbit:before{
+content:"";
+position:absolute;
+width:14px;
+height:14px;
+border-radius:50%;
+background:var(--green);
+top:30px;
+left:55px;
+box-shadow:0 0 25px var(--green);
+}
+
+.orbit.two{
+width:220px;
+height:220px;
+animation-direction:reverse;
+border-color:rgba(154,245,197,.3);
+}
+
+.reactor{
+width:160px;
+height:220px;
+border:2px solid var(--green);
+border-radius:30px 30px 45px 45px;
+position:relative;
+overflow:hidden;
+background:linear-gradient(180deg,#173e2b,#071510);
+box-shadow:0 0 50px rgba(54,214,138,.2);
+}
+
+.reactor:before{
+content:"";
+position:absolute;
+width:100%;
+height:55%;
+bottom:0;
+background:rgba(54,214,138,.17);
+animation:wave 3s ease-in-out infinite;
+}
+
+.bubble{
+position:absolute;
+bottom:15px;
+width:9px;
+height:9px;
+border:1px solid var(--mint);
+border-radius:50%;
+animation:bubble 4s infinite;
+}
+
+.bubble:nth-child(1){left:35px;animation-delay:0s}
+.bubble:nth-child(2){left:80px;animation-delay:1s}
+.bubble:nth-child(3){left:115px;animation-delay:2s}
+
+.reactor-label{
+position:absolute;
+bottom:-35px;
+font-size:13px;
+color:var(--mint);
+}
+
+@keyframes rotate{
+to{transform:rotate(360deg)}
+}
+
+@keyframes wave{
+0%,100%{height:45%}
+50%{height:60%}
+}
+
+@keyframes bubble{
+0%{transform:translateY(0);opacity:0}
+30%{opacity:1}
+100%{transform:translateY(-150px);opacity:0}
+}
+
+section{
+padding:75px 0;
+scroll-margin-top:80px;
+}
+
+.section-head{
+text-align:center;
+margin-bottom:40px;
+}
+
+.section-head small{
+color:var(--green);
+font-weight:800;
+letter-spacing:2px;
+}
+
+.section-head h2{
+font-size:32px;
+margin:8px 0;
+}
+
+.section-head p{
+color:var(--muted);
+max-width:700px;
+margin:auto;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:18px;
+}
+
+.card,.box{
+background:var(--panel);
+border:1px solid var(--border);
+padding:24px;
+border-radius:17px;
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+border-color:var(--green);
+}
+
+.icon{
+font-size:30px;
+margin-bottom:12px;
+}
+
+.card h3,.box h3{
+color:var(--mint);
+margin-bottom:8px;
+}
+
+.card p,.box p{
+color:var(--muted);
+font-size:14px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+}
+
+.stat{
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:15px;
+padding:22px;
+text-align:center;
+}
+
+.stat strong{
+font-size:30px;
+color:var(--green);
+display:block;
+}
+
+.stat span{
+font-size:13px;
+color:var(--muted);
+}
+
+.two-col{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+}
+
+.process{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:12px;
+}
+
+.step{
+text-align:center;
+padding:22px 10px;
+border:1px solid var(--border);
+border-radius:15px;
+background:var(--panel);
+}
+
+.step .number{
+width:38px;
+height:38px;
+margin:0 auto 10px;
+border-radius:50%;
+display:grid;
+place-items:center;
+background:var(--green);
+color:#06170e;
+font-weight:900;
+}
+
+.step h3{
+font-size:15px;
+color:var(--mint);
+}
+
+.step p{
+font-size:12px;
+color:var(--muted);
+}
+
+.form-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+}
+
+label{
+display:block;
+font-size:13px;
+color:var(--mint);
+margin-bottom:5px;
+}
+
+input,select,textarea{
+width:100%;
+padding:12px;
+border-radius:9px;
+background:#081a12;
+border:1px solid var(--border);
+color:white;
+outline:none;
+margin-bottom:13px;
+}
+
+input:focus,select:focus,textarea:focus{
+border-color:var(--green);
+}
+
+textarea{
+min-height:95px;
+resize:vertical;
+}
+
+.result{
+margin-top:20px;
+padding:18px;
+background:#081a12;
+border:1px solid var(--border);
+border-radius:12px;
+white-space:pre-line;
+color:var(--mint);
+}
+
+.table-wrap{
+overflow-x:auto;
+margin-top:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+min-width:700px;
+font-size:13px;
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid var(--border);
+text-align:center;
+}
+
+th{
+color:var(--mint);
+background:var(--panel2);
+}
+
+td{
+color:var(--muted);
+}
+
+.action-btn{
+padding:6px 12px;
+border:0;
+border-radius:6px;
+background:#572626;
+color:white;
+}
+
+.chart{
+display:flex;
+align-items:flex-end;
+gap:12px;
+height:210px;
+padding:20px 5px;
+border-bottom:1px solid var(--border);
+}
+
+.bar-wrap{
+flex:1;
+height:100%;
+display:flex;
+flex-direction:column;
+justify-content:flex-end;
+align-items:center;
+gap:7px;
+}
+
+.bar{
+width:65%;
+min-height:3px;
+background:linear-gradient(0deg,#16834f,var(--green));
+border-radius:7px 7px 0 0;
+transition:.5s;
+}
+
+.bar-label{
+font-size:11px;
+color:var(--muted);
+text-align:center;
+}
+
+.simulator{
+background:linear-gradient(145deg,#123626,#091c13);
+border:1px solid var(--border);
+padding:25px;
+border-radius:18px;
+}
+
+.simulator input[type=range]{
+accent-color:var(--green);
+}
+
+footer{
+border-top:1px solid var(--border);
+padding:35px 0;
+text-align:center;
+color:var(--muted);
+font-size:13px;
+}
+
+footer strong{
+color:var(--mint);
+}
+
+.notice{
+font-size:12px;
+color:var(--gold);
+margin-top:12px;
+}
+
+.hidden{
+display:none;
+}
+
+@media(max-width:850px){
+.hero,.two-col{
+grid-template-columns:1fr;
+}
+.grid{
+grid-template-columns:1fr 1fr;
+}
+.stats{
+grid-template-columns:1fr 1fr;
+}
+.process{
+grid-template-columns:1fr 1fr;
+}
+nav{
+gap:9px;
+}
+}
+
+@media(max-width:550px){
+.nav{
+padding:15px 0;
+align-items:flex-start;
+flex-direction:column;
+}
+nav{
+gap:10px;
+}
+nav a{
+font-size:11px;
+}
+.grid,.form-grid{
+grid-template-columns:1fr;
+}
+.hero{
+padding-top:45px;
+}
+.hero-visual{
+height:300px;
+}
+.orbit{
+width:240px;
+height:240px;
+}
+.orbit.two{
+width:180px;
+height:180px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="container nav">
+<a href="#home" class="logo">GREEN <span>H₂</span> LAB</a>
+
+<nav>
+<a href="#home">الرئيسية</a>
+<a href="#about">المشروع</a>
+<a href="#lab">المعمل</a>
+<a href="#explorer">المخلفات</a>
+<a href="#dashboard">البيانات</a>
+<a href="#account">حسابي</a>
+<a href="#analysis">التحليل</a>
+</nav>
+</div>
+</header>
+
+<main>
+
+<!-- HERO -->
+
+<section class="hero container" id="home">
+
+<div>
+<div class="tag">SOLAR WASTE-TO-HYDROGEN</div>
+
+<h1>
+من المخلفات الزراعية<br>
+إلى <span>الطاقة النظيفة</span>
+</h1>
+
+<p>
+منصة بحثية تفاعلية تستكشف إمكانية الاستفادة من المخلفات الزراعية المصرية
+في تطوير مواد محفزة ضوئيًا ودراسة إنتاج الهيدروجين باستخدام الطاقة الشمسية.
+</p>
+
+<div class="buttons">
+<a class="btn" href="#lab">استكشف المعمل</a>
+<a class="btn outline" href="#about">اكتشف الفكرة</a>
+</div>
+</div>
+
+<div class="hero-visual">
+<div class="orbit"></div>
+<div class="orbit two"></div>
+<div class="reactor">
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+</div>
+<div class="reactor-label">SOLAR REACTOR</div>
+</div>
+
+</section>
+
+<!-- ABOUT -->
+
+<section id="about">
+<div class="container">
+
+<div class="section-head">
+<small>ABOUT THE PROJECT</small>
+<h2>ما فكرة GREEN H₂ LAB؟</h2>
+<p>
+مشروع يجمع بين الاستدامة والطاقة المتجددة والكيمياء وتحليل البيانات
+لدراسة مسارات مبتكرة للاستفادة من المخلفات الزراعية.
+</p>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<div class="icon">🌾</div>
+<h3>المخلفات الزراعية</h3>
+<p>
+دراسة أنواع مختلفة من المخلفات المصرية مثل قش الأرز وقشور الموز
+والبرتقال والبطاطس.
+</p>
+</div>
+
+<div class="card">
+<div class="icon">☀️</div>
+<h3>التحفيز الضوئي</h3>
+<p>
+دراسة استخدام ثاني أكسيد التيتانيوم TiO₂ ومواد كربونية
+مستخلصة من المخلفات.
+</p>
+</div>
+
+<div class="card">
+<div class="icon">⚡</div>
+<h3>الهيدروجين الأخضر</h3>
+<p>
+دراسة إنتاج الهيدروجين باستخدام الطاقة الشمسية
+وتحليل العوامل المؤثرة في معدل الإنتاج.
+</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- PROCESS -->
+
+<section id="lab">
+<div class="container">
+
+<div class="section-head">
+<small>VIRTUAL LABORATORY</small>
+<h2>المعمل الافتراضي</h2>
+<p>رحلة المخلفات الزراعية من المادة الخام إلى دراسة إنتاج الهيدروجين.</p>
+</div>
+
+<div class="process">
+
+<div class="step">
+<div class="number">1</div>
+<h3>المخلفات</h3>
+<p>اختيار المخلفات الزراعية.</p>
+</div>
+
+<div class="step">
+<div class="number">2</div>
+<h3>المعالجة</h3>
+<p>دراسة المستخلصات والبقايا الصلبة.</p>
+</div>
+
+<div class="step">
+<div class="number">3</div>
+<h3>المحفز</h3>
+<p>دراسة TiO₂ والـ Biochar.</p>
+</div>
+
+<div class="step">
+<div class="number">4</div>
+<h3>الطاقة الشمسية</h3>
+<p>دراسة التفاعل الضوئي.</p>
+</div>
+
+<div class="step">
+<div class="number">5</div>
+<h3>تحليل H₂</h3>
+<p>قياس وتحليل النتائج.</p>
+</div>
+
+</div>
+
+<div class="two-col" style="margin-top:25px">
+
+<div class="box">
+<h3>كيف يعمل النظام؟</h3>
+<p>
+تُدرس المخلفات من خلال مسارين:
+المستخلصات السائلة التي قد تحتوي على مركبات عضوية،
+والبقايا الصلبة التي يمكن دراسة تحويلها إلى Biochar.
+بعد ذلك تُدرس إمكانية دمج المادة الكربونية مع TiO₂
+لتطوير محفز ضوئي.
+</p>
+</div>
+
+<div class="box">
+<h3>المفاعل الضوئي</h3>
+<div class="hero-visual" style="height:180px">
+<div class="reactor" style="transform:scale(.65)">
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+</div>
+</div>
+<p>
+تمثيل بصري تعليمي لفكرة المفاعل، وليس صورة لجهاز تجريبي فعلي.
+</p>
+</div>
+
+</div>
+
+</div>
+</section>
+
+<!-- WASTE EXPLORER -->
+
+<section id="explorer">
+<div class="container">
+
+<div class="section-head">
+<small>WASTE EXPLORER</small>
+<h2>مستكشف المخلفات الزراعية</h2>
+<p>اختاري نوع المخلف لاستكشاف مسارات البحث الممكنة.</p>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<div class="icon">🌾</div>
+<h3>قش الأرز</h3>
+<p>يمكن دراسة تحويل البقايا الصلبة إلى مادة كربونية واختبار استخدامها مع TiO₂.</p>
+<button class="btn outline" onclick="showWaste('قش الأرز')">استكشاف</button>
+</div>
+
+<div class="card">
+<div class="icon">🍌</div>
+<h3>قشور الموز</h3>
+<p>يمكن دراسة المستخلص السائل والبقايا الصلبة كلٌّ على حدة.</p>
+<button class="btn outline" onclick="showWaste('قشور الموز')">استكشاف</button>
+</div>
+
+<div class="card">
+<div class="icon">🍊</div>
+<h3>قشور البرتقال</h3>
+<p>دراسة المركبات العضوية الموجودة في المستخلص وإمكانية الاستفادة منها.</p>
+<button class="btn outline" onclick="showWaste('قشور البرتقال')">استكشاف</button>
+</div>
+
+<div class="card">
+<div class="icon">🥔</div>
+<h3>قشور البطاطس</h3>
+<p>دراسة محتوى المخلفات من المركبات العضوية والبقايا الصلبة.</p>
+<button class="btn outline" onclick="showWaste('قشور البطاطس')">استكشاف</button>
+</div>
+
+</div>
+
+<div class="result" id="wasteResult">
+اختاري نوع المخلف لعرض المعلومات.
+</div>
+
+</div>
+</section>
+
+<!-- SIMULATOR -->
+
+<section id="simulator">
+<div class="container">
+
+<div class="section-head">
+<small>EDUCATIONAL SIMULATOR</small>
+<h2>المحاكي التعليمي</h2>
+<p>استكشاف بصري لكيفية تغير المؤشر الافتراضي عند تغيير المدخلات.</p>
+</div>
+
+<div class="simulator">
+
+<label>شدة الإضاءة الافتراضية</label>
+<input type="range" id="lightRange" min="1" max="100" value="50">
+
+<label>كمية المحفز الافتراضية</label>
+<input type="range" id="catalystRange" min="1" max="100" value="50">
+
+<label>تركيز المادة العضوية الافتراضي</label>
+<input type="range" id="organicRange" min="1" max="100" value="50">
+
+<div class="result" id="simulationResult">
+المؤشر الافتراضي: 50
+</div>
+
+<p class="notice">
+تنبيه: هذه محاكاة تعليمية بمعادلة افتراضية فقط.
+لا تمثل قياسًا لمعدل إنتاج الهيدروجين ولا تتنبأ بنتائج تجربة حقيقية.
+</p>
+
+</div>
+</div>
+</section>
+
+<!-- ACCOUNT -->
+
+<section id="account">
+<div class="container">
+
+<div class="section-head">
+<small>USER ACCOUNT</small>
+<h2>حساب الباحث</h2>
+<p>إنشاء حساب وتسجيل الدخول لحفظ التجارب في قاعدة البيانات السحابية.</p>
+</div>
+
+<div class="box">
+
+<div class="result" id="authStatus">حالة الحساب: لم يتم تسجيل الدخول.</div>
+
+<label>البريد الإلكتروني</label>
+<input id="authEmail" type="email" placeholder="البريد الإلكتروني">
+
+<label>كلمة المرور</label>
+<input id="authPassword" type="password" placeholder="كلمة المرور">
+
+<div class="buttons">
+<button class="btn" onclick="signUp()">إنشاء حساب</button>
+<button class="btn outline" onclick="signIn()">تسجيل الدخول</button>
+<button class="btn danger" onclick="signOut()">تسجيل الخروج</button>
+</div>
+
+<p class="notice">
+استخدمي بريدًا مخصصًا للمشروع، ولا تشاركي كلمة المرور مع أي شخص.
+</p>
+
+</div>
+</div>
+</section>
+
+<!-- DASHBOARD -->
+
+<section id="dashboard">
+<div class="container">
+
+<div class="section-head">
+<small>RESEARCH DASHBOARD</small>
+<h2>لوحة البيانات والتجارب</h2>
+<p>تسجيل نتائج التجارب ومتابعة القراءات المتاحة.</p>
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<strong id="totalRecords">0</strong>
+<span>عدد التجارب</span>
+</div>
+
+<div class="stat">
+<strong id="averageRate">0</strong>
+<span>متوسط معدل H₂</span>
+</div>
+
+<div class="stat">
+<strong id="maxRate">0</strong>
+<span>أعلى قراءة</span>
+</div>
+
+<div class="stat">
+<strong id="wasteTypes">0</strong>
+<span>أنواع المخلفات</span>
+</div>
+
+</div>
+
+<div class="two-col" style="margin-top:25px">
+
+<div class="box">
+<h3>مخطط نتائج التجارب</h3>
+<div class="chart" id="chart"></div>
+<p class="notice">يعرض المخطط القراءات المسجلة فقط.</p>
+</div>
+
+<div class="box">
+<h3>إدارة البيانات</h3>
+<p>يمكن تصدير البيانات إلى ملف CSV أو تحميل البيانات المحفوظة سحابيًا.</p>
+
+<div class="buttons" style="margin-top:18px">
+<button class="btn" onclick="exportCSV()">تصدير CSV</button>
+<button class="btn outline" onclick="loadCloudExperiments()">تحميل السجل السحابي</button>
+</div>
+
+<div class="result" id="cloudStatus">لم يتم تحميل البيانات السحابية.</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- EXPERIMENTS -->
+
+<section id="data">
+<div class="container">
+
+<div class="section-head">
+<small>EXPERIMENT DATABASE</small>
+<h2>سجل التجارب العلمية</h2>
+<p>أدخلي نتائج القياسات الفعلية مع توثيق ظروف كل تجربة.</p>
+</div>
+
+<div class="box">
+
+<form id="experimentForm">
+
+<div class="form-grid">
+
+<div>
+<label>نوع المخلف</label>
+<select id="waste" required>
+<option value="">اختاري المخلف</option>
+<option>قش الأرز</option>
+<option>قشور الموز</option>
+<option>قشور البرتقال</option>
+<option>قشور البطاطس</option>
+<option>نوع آخر</option>
+</select>
+</div>
+
+<div>
+<label>رمز العينة</label>
+<input id="sample" placeholder="مثال: S01" required>
+</div>
+
+<div>
+<label>معدل إنتاج الهيدروجين (µmol·g⁻¹·h⁻¹)</label>
+<input id="rate" type="number" min="0" step="any" required>
+</div>
+
+<div>
+<label>درجة الحموضة pH</label>
+<input id="ph" type="number" min="0" max="14" step="any">
+</div>
+
+<div>
+<label>ظروف الإضاءة</label>
+<input id="light" placeholder="مثال: ضوء شمسي">
+</div>
+
+<div>
+<label>رقم التكرار</label>
+<input id="trial" placeholder="مثال: Trial 1">
+</div>
+
+<div>
+<label>تاريخ التجربة</label>
+<input id="date" type="date" required>
+</div>
+
+</div>
+
+<label>ملاحظات إضافية</label>
+<textarea id="notes" placeholder="ظروف التجربة والملاحظات العلمية..."></textarea>
+
+<button class="btn" type="submit">حفظ التجربة</button>
+
+</form>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>التاريخ</th>
+<th>المخلف</th>
+<th>العينة</th>
+<th>معدل H₂</th>
+<th>pH</th>
+<th>الإضاءة</th>
+<th>التكرار</th>
+<th>حذف</th>
+</tr>
+</thead>
+<tbody id="recordsTable"></tbody>
+</table>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- ANALYSIS -->
+
+<section id="analysis">
+<div class="container">
+
+<div class="section-head">
+<small>DATA ANALYSIS</small>
+<h2>مركز تحليل البيانات</h2>
+<p>تحليل إحصائي أولي وتجهيز البيانات للبحث العلمي.</p>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<div class="icon">📊</div>
+<h3>التحليل الوصفي</h3>
+<p>حساب المتوسط وأعلى وأقل قراءة وعدد التجارب المسجلة.</p>
+</div>
+
+<div class="card">
+<div class="icon">🧠</div>
+<h3>Two-stage LASSO</h3>
+<p>مسار بحثي مقترح لاختيار المتغيرات الأكثر ارتباطًا بمعدل إنتاج الهيدروجين.</p>
+</div>
+
+<div class="card">
+<div class="icon">🔬</div>
+<h3>مقارنة النتائج</h3>
+<p>دراسة الاختلافات بين أنواع المخلفات في البيانات المتاحة.</p>
+</div>
+
+</div>
+
+<div class="box" style="margin-top:20px">
+
+<h3>تحليل بيانات التجارب</h3>
+
+<button class="btn" onclick="analyzeResearchData()">ابدئي التحليل</button>
+
+<div class="result" id="aiResult">
+لا توجد نتائج تحليل حتى الآن.
+</div>
+
+<p class="notice">
+هذا تحليل إحصائي وصفي وليس نموذج ذكاء اصطناعي مدربًا.
+يتطلب تنفيذ Two-stage LASSO بيانات كافية وبرنامجًا إحصائيًا
+وتحققًا من أداء النموذج على بيانات مستقلة.
+</p>
+
+</div>
+</div>
+</section>
+
+<!-- RESEARCH ASSISTANT -->
+
+<section id="assistant">
+<div class="container">
+
+<div class="section-head">
+<small>RESEARCH ASSISTANT</small>
+<h2>المساعد البحثي</h2>
+<p>مساعد تعليمي يجيب عن بعض الأسئلة الأساسية المتعلقة بالمشروع.</p>
+</div>
+
+<div class="box">
+
+<label>اكتبي سؤالك</label>
+<input id="question" placeholder="ما دور TiO₂ في المشروع؟">
+
+<button class="btn" onclick="askResearch()">إرسال السؤال</button>
+
+<div class="result" id="answer">
+أهلًا بك في المساعد البحثي.
+</div>
+
+<p class="notice">
+هذا المساعد يعتمد على إجابات مبرمجة مسبقًا وليس نموذج ذكاء اصطناعي متصلًا.
+</p>
+
+</div>
+</div>
+</section>
+
+<!-- REPORT -->
+
+<section id="reports">
+<div class="container">
+
+<div class="section-head">
+<small>RESEARCH REPORT</small>
+<h2>التقرير البحثي</h2>
+<p>إنشاء ملخص من البيانات التي تم إدخالها.</p>
+</div>
+
+<div class="box">
+
+<button class="btn" onclick="generateReport()">إنشاء التقرير</button>
+<button class="btn outline" onclick="window.print()">طباعة التقرير</button>
+
+<div class="result" id="reportResult">
+سيظهر ملخص التجارب هنا.
+</div>
+
+</div>
+</div>
+</section>
+
+</main>
+
+<footer>
+<div class="container">
+<strong>GREEN H₂ LAB</strong>
+<p>From Agricultural Waste to Clean Energy</p>
+<p>إعداد وتطوير: رقية الشيخ</p>
+<p>© 2026 GREEN H₂ LAB — Educational Research Platform</p>
+</div>
+</footer>
+
+<script>
+
+// =====================================
+// 1. CONFIGURATION
+// =====================================
+
+// ضعي بيانات مشروع Supabase هنا بعد إنشائه.
+
+const SUPABASE_URL = "YOUR_PROJECT_URL";
+const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
+
+let cloud = null;
+let currentUser = null;
+
+const cloudConfigured =
+SUPABASE_URL.startsWith("https://") &&
+SUPABASE_KEY !== "YOUR_PUBLISHABLE_KEY";
+
+if(cloudConfigured && window.supabase){
+cloud = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+}
+
+// =====================================
+// 2. LOCAL DATABASE
+// =====================================
+
+const STORAGE_KEY = "greenH2LabRecords_v2";
+
+let records = [];
+
+try{
+records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+}catch(error){
+records = [];
+}
+
+function saveLocal(){
+localStorage.setItem(STORAGE_KEY,JSON.stringify(records));
+}
+
+function today(){
+return new Date().toISOString().slice(0,10);
+}
+
+document.getElementById("date").value = today();
+
+// =====================================
+// 3. WASTE EXPLORER
+// =====================================
+
+function showWaste(name){
+
+const information = {
+
+"قش الأرز":
+"يمكن دراسة البقايا الصلبة لقش الأرز وتحويلها إلى Biochar، ثم دراسة خصائصها وإمكانية دمجها مع TiO₂. يجب اختبار خصائص المادة الناتجة معمليًا.",
+
+"قشور الموز":
+"يمكن دراسة المستخلص السائل لقشور الموز لتحديد محتواه من المركبات العضوية، ودراسة البقايا الصلبة كمسار محتمل لإنتاج مادة كربونية.",
+
+"قشور البرتقال":
+"تحتوي قشور البرتقال على مركبات عضوية يمكن تحليلها، لكن صلاحية المستخلص كمادة مانحة للإلكترونات تحتاج إلى اختبار تجريبي.",
+
+"قشور البطاطس":
+"يمكن دراسة المستخلص الناتج من قشور البطاطس والبقايا الصلبة، ومقارنة خصائصهما مع أنواع المخلفات الأخرى."
+
+};
+
+document.getElementById("wasteResult").textContent =
+name + "\n\n" + information[name];
+
+}
+
+// =====================================
+// 4. EDUCATIONAL SIMULATOR
+// =====================================
+
+function updateSimulation(){
+
+const light = Number(document.getElementById("lightRange").value);
+const catalyst = Number(document.getElementById("catalystRange").value);
+const organic = Number(document.getElementById("organicRange").value);
+
+// مؤشر تعليمي افتراضي وليس نموذجًا فيزيائيًا.
+
+const value = (light+catalyst+organic)/3;
+
+document.getElementById("simulationResult").textContent =
+"المؤشر الافتراضي: " + value.toFixed(1) +
+"\nالإضاءة: " + light +
+"\nالمحفز: " + catalyst +
+"\nالمادة العضوية: " + organic;
+
+}
+
+["lightRange","catalystRange","organicRange"].forEach(id=>{
+document.getElementById(id).addEventListener("input",updateSimulation);
+});
+
+updateSimulation();
+
+// =====================================
+// 5. ACCOUNT AUTHENTICATION
+// =====================================
+
+function updateAccount(){
+
+document.getElementById("authStatus").textContent =
+currentUser
+? "تم تسجيل الدخول: " + currentUser.email
+: "لم يتم تسجيل الدخول.";
+
+}
+
+async function signUp(){
+
+if(!cloud){
+alert("يجب إعداد بيانات Supabase أولًا.");
+return;
+}
+
+const email = document.getElementById("authEmail").value.trim();
+const password = document.getElementById("authPassword").value;
+
+if(!email || password.length < 8){
+alert("أدخلي بريدًا إلكترونيًا وكلمة مرور من 8 أحرف على الأقل.");
+return;
+}
+
+const {data,error} = await cloud.auth.signUp({
+email,
+password
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+if(data.session){
+currentUser = data.user;
+updateAccount();
+alert("تم إنشاء الحساب وتسجيل الدخول.");
+}else{
+alert("تم إنشاء الحساب. تحققي من بريدك الإلكتروني لتأكيده.");
+}
+
+}
+
+async function signIn(){
+
+if(!cloud){
+alert("يجب إعداد بيانات Supabase أولًا.");
+return;
+}
+
+const email = document.getElementById("authEmail").value.trim();
+const password = document.getElementById("authPassword").value;
+
+const {data,error} = await cloud.auth.signInWithPassword({
+email,
+password
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+currentUser = data.user;
+updateAccount();
+
+await loadCloudExperiments();
+
+alert("تم تسجيل الدخول بنجاح.");
+
+}
+
+async function signOut(){
+
+if(!cloud){
+alert("Supabase غير متصل.");
+return;
+}
+
+const {error} = await cloud.auth.signOut();
+
+if(error){
+alert(error.message);
+return;
+}
+
+currentUser = null;
+updateAccount();
+
+document.getElementById("cloudStatus").textContent =
+"تم تسجيل الخروج.";
+
+}
+
+if(cloud){
+
+cloud.auth.getSession().then(({data})=>{
+currentUser = data.session?.user || null;
+updateAccount();
+});
+
+cloud.auth.onAuthStateChange((_event,session)=>{
+currentUser = session?.user || null;
+updateAccount();
+});
+
+}
+
+// =====================================
+// 6. ADD EXPERIMENT
+// =====================================
+
+document.getElementById("experimentForm").addEventListener("submit",async function(e){
+
+e.preventDefault();
+
+const record = {
+
+id:Date.now(),
+
+waste:document.getElementById("waste").value,
+
+sample:document.getElementById("sample").value.trim(),
+
+rate:Number(document.getElementById("rate").value),
+
+ph:document.getElementById("ph").value,
+
+light:document.getElementById("light").value,
+
+trial:document.getElementById("trial").value,
+
+date:document.getElementById("date").value,
+
+notes:document.getElementById("notes").value
+
+};
+
+if(!Number.isFinite(record.rate) || record.rate < 0){
+alert("أدخلي قراءة صحيحة.");
+return;
+}
+
+records.push(record);
+
+saveLocal();
+
+render();
+
+if(currentUser){
+await saveExperimentToCloud(record);
+}
+
+this.reset();
+document.getElementById("date").value = today();
+
+});
+
+// =====================================
+// 7. CLOUD DATABASE
+// =====================================
+
+async function saveExperimentToCloud(record){
+
+if(!cloud || !currentUser){
+return;
+}
+
+const payload = {
+
+user_id:currentUser.id,
+
+waste:record.waste,
+
+sample:record.sample,
+
+hydrogen_rate:record.rate,
+
+ph:record.ph === "" ? null : Number(record.ph),
+
+light_conditions:record.light,
+
+trial:record.trial,
+
+notes:record.notes,
+
+experiment_date:record.date
+
+};
+
+const {error} = await cloud
+.from("experiments")
+.insert(payload);
+
+if(error){
+
+document.getElementById("cloudStatus").textContent =
+"تعذر الحفظ السحابي: " + error.message;
+
+}else{
+
+document.getElementById("cloudStatus").textContent =
+"تم حفظ التجربة على قاعدة البيانات السحابية.";
+
+}
+
+}
+
+async function loadCloudExperiments(){
+
+if(!cloud){
+alert("يجب إعداد Supabase أولًا.");
+return;
+}
+
+if(!currentUser){
+alert("سجلي الدخول أولًا.");
+return;
+}
+
+const {data,error} = await cloud
+.from("experiments")
+.select("*")
+.order("experiment_date",{ascending:true});
+
+if(error){
+alert(error.message);
+return;
+}
+
+// تحويل البيانات السحابية إلى نفس شكل السجل المحلي.
+
+records = data.map(row=>({
+
+id:"cloud_"+row.id,
+
+waste:row.waste,
+
+sample:row.sample,
+
+rate:Number(row.hydrogen_rate),
+
+ph:row.ph ?? "",
+
+light:row.light_conditions ?? "",
+
+trial:row.trial ?? "",
+
+notes:row.notes ?? "",
+
+date:row.experiment_date
+
+}));
+
+saveLocal();
+
+render();
+
+document.getElementById("cloudStatus").textContent =
+"تم تحميل " + records.length + " تجربة من قاعدة البيانات السحابية.";
+
+}
+
+// =====================================
+// 8. RENDER TABLE
+// =====================================
+
+function render(){
+
+const table = document.getElementById("recordsTable");
+
+table.innerHTML = "";
+
+records.forEach(record=>{
+
+const row = document.createElement("tr");
+
+const values = [
+record.date,
+record.waste,
+record.sample,
+record.rate,
+record.ph || "-",
+record.light || "-",
+record.trial || "-"
+];
+
+values.forEach(value=>{
+
+const cell = document.createElement("td");
+
+cell.textContent = value;
+
+row.appendChild(cell);
+
+});
+
+const actionCell = document.createElement("td");
+
+const button = document.createElement("button");
+
+button.className = "action-btn";
+
+button.textContent = "حذف";
+
+button.onclick = ()=>deleteRecord(record.id);
+
+actionCell.appendChild(button);
+
+row.appendChild(actionCell);
+
+table.appendChild(row);
+
+});
+
+updateDashboard();
+
+}
+
+// =====================================
+// 9. DELETE RECORD
+// =====================================
+
+function deleteRecord(id){
+
+if(!confirm("هل تريدين حذف هذه التجربة من السجل المحلي؟")) return;
+
+records = records.filter(r=>r.id !== id);
+
+saveLocal();
+
+render();
+
+}
+
+// =====================================
+// 10. DASHBOARD
+// =====================================
+
+function updateDashboard(){
+
+const rates = records.map(r=>Number(r.rate)).filter(Number.isFinite);
+
+const total = records.length;
+
+const average = rates.length
+? rates.reduce((a,b)=>a+b,0)/rates.length
+: 0;
+
+const maximum = rates.length
+? Math.max(...rates)
+: 0;
+
+const types = new Set(records.map(r=>r.waste));
+
+document.getElementById("totalRecords").textContent = total;
+
+document.getElementById("averageRate").textContent = average.toFixed(2);
+
+document.getElementById("maxRate").textContent = maximum.toFixed(2);
+
+document.getElementById("wasteTypes").textContent = types.size;
+
+drawChart();
+
+}
+
+// =====================================
+// 11. CHART
+// =====================================
+
+function drawChart(){
+
+const chart = document.getElementById("chart");
+
+chart.innerHTML = "";
+
+const lastRecords = records.slice(-8);
+
+const max = Math.max(
+1,
+...lastRecords.map(r=>Number(r.rate))
+);
+
+lastRecords.forEach(record=>{
+
+const wrap = document.createElement("div");
+
+wrap.className = "bar-wrap";
+
+const bar = document.createElement("div");
+
+bar.className = "bar";
+
+bar.style.height =
+(Math.max(0,Number(record.rate))/max*100) + "%";
+
+const label = document.createElement("div");
+
+label.className = "bar-label";
+
+label.textContent = record.sample;
+
+wrap.appendChild(bar);
+
+wrap.appendChild(label);
+
+chart.appendChild(wrap);
+
+});
+
+}
+
+// =====================================
+// 12. EXPORT CSV
+// =====================================
+
+function exportCSV(){
+
+if(!records.length){
+alert("لا توجد بيانات لتصديرها.");
+return;
+}
+
+const headers = [
+"Date",
+"Waste",
+"Sample",
+"Hydrogen Rate",
+"pH",
+"Light",
+"Trial",
+"Notes"
+];
+
+const rows = records.map(r=>[
+r.date,
+r.waste,
+r.sample,
+r.rate,
+r.ph,
+r.light,
+r.trial,
+r.notes
+]);
+
+const csv = [
+headers,
+...rows
+].map(row=>
+row.map(value=>
+'"'+String(value ?? "").replace(/"/g,'""')+'"'
+).join(",")
+).join("\n");
+
+const blob = new Blob(
+["\uFEFF"+csv],
+{type:"text/csv;charset=utf-8;"}
+);
+
+const link = document.createElement("a");
+
+link.href = URL.createObjectURL(blob);
+
+link.download = "GREEN_H2_LAB_Experiments.csv";
+
+link.click();
+
+URL.revokeObjectURL(link.href);
+
+}
+
+// =====================================
+// 13. DATA ANALYSIS
+// =====================================
+
+function analyzeResearchData(){
+
+const result = document.getElementById("aiResult");
+
+if(records.length < 3){
+
+result.textContent =
+"عدد البيانات غير كافٍ لعرض ملخص أولي. أضيفي ثلاث تجارب على الأقل. هذا العدد لا يكفي لبناء نموذج موثوق.";
+
+return;
+
+}
+
+const rates = records.map(r=>Number(r.rate));
+
+const average =
+rates.reduce((a,b)=>a+b,0)/rates.length;
+
+const sorted = [...rates].sort((a,b)=>a-b);
+
+const median = sorted.length%2
+? sorted[Math.floor(sorted.length/2)]
+: (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
+
+const minimum = Math.min(...rates);
+
+const maximum = Math.max(...rates);
+
+const variance =
+rates.reduce((sum,value)=>sum+Math.pow(value-average,2),0)/rates.length;
+
+const standardDeviation = Math.sqrt(variance);
+
+const grouped = {};
+
+records.forEach(record=>{
+
+if(!grouped[record.waste]){
+grouped[record.waste] = [];
+}
+
+grouped[record.waste].push(Number(record.rate));
+
+});
+
+let groupText = "";
+
+for(const waste in grouped){
+
+const values = grouped[waste];
+
+const avg = values.reduce((a,b)=>a+b,0)/values.length;
+
+groupText +=
+"\n" + waste +
+": متوسط " + avg.toFixed(3) +
+" من " + values.length + " تجربة.";
+
+}
+
+result.textContent =
+
+"ملخص التحليل الإحصائي\n\n" +
+
+"عدد التجارب: " + records.length +
+
+"\nالمتوسط: " + average.toFixed(3) +
+
+"\nالوسيط: " + median.toFixed(3) +
+
+"\nأعلى قراءة: " + maximum +
+
+"\nأقل قراءة: " + minimum +
+
+"\nالانحراف المعياري: " + standardDeviation.toFixed(3) +
+
+"\n\nمقارنة أنواع المخلفات:" +
+
+groupText +
+
+"\n\nملاحظة: التحليل وصفي فقط، ولا يثبت علاقة سببية أو يمثل نموذج ذكاء اصطناعي.";
+
+}
+
+// =====================================
+// 14. RESEARCH ASSISTANT
+// =====================================
+
+function askResearch(){
+
+const question = document.getElementById("question").value.toLowerCase();
+
+let answer = "يمكنك البحث في قسم المشروع والمعمل الافتراضي للحصول على مزيد من المعلومات.";
+
+if(question.includes("tio2") || question.includes("تيتانيوم")){
+
+answer =
+"TiO₂ هو مادة شبه موصلة تُدرس في التحفيز الضوئي. عند امتصاص الضوء المناسب يمكن أن تتكون أزواج من الإلكترونات والفجوات، وقد تشارك في تفاعلات أكسدة واختزال.";
+
+}
+
+else if(question.includes("biochar") || question.includes("الفحم")){
+
+answer =
+"Biochar مادة كربونية تنتج من معالجة الكتلة الحيوية في ظروف محددة. يمكن دراسة دمجها مع TiO₂ وتأثير خصائصها في أداء المحفز.";
+
+}
+
+else if(question.includes("الهيدروجين")){
+
+answer =
+"الهيدروجين يمكن استخدامه كناقل للطاقة. يدرس المشروع إمكانية إنتاجه باستخدام الطاقة الشمسية والتحفيز الضوئي.";
+
+}
+
+else if(question.includes("المخلفات")){
+
+answer =
+"المخلفات الزراعية قد تحتوي على مركبات عضوية وبقايا صلبة يمكن دراسة الاستفادة منها في مسارات مختلفة.";
+
+}
+
+else if(question.includes("lasso")){
+
+answer =
+"Two-stage LASSO أسلوب إحصائي لاختيار المتغيرات المهمة في النماذج. يحتاج إلى بيانات مناسبة وتنفيذ إحصائي وتقييم مستقل.";
+
+}
+
+document.getElementById("answer").textContent = answer;
+
+}
+
+// =====================================
+// 15. REPORT GENERATOR
+// =====================================
+
+function generateReport(){
+
+if(!records.length){
+
+document.getElementById("reportResult").textContent =
+"لا توجد تجارب مسجلة حتى الآن.";
+
+return;
+
+}
+
+const rates = records.map(r=>Number(r.rate));
+
+const average =
+rates.reduce((a,b)=>a+b,0)/rates.length;
+
+const types = [...new Set(records.map(r=>r.waste))];
+
+document.getElementById("reportResult").textContent =
+
+"GREEN H₂ LAB — Research Summary\n\n" +
+
+"إجمالي التجارب: " + records.length +
+
+"\nمتوسط معدل إنتاج الهيدروجين المسجل: " + average.toFixed(3) +
+
+"\nأنواع المخلفات: " + types.join("، ") +
+
+"\n\nهذا التقرير يلخص البيانات التي أدخلها المستخدم ولا يمثل تحققًا مستقلًا من صحتها.";
+
+}
+
+// =====================================
+// 16. INITIALIZATION
+// =====================================
+
+render();
+
+if(!cloud){
+
+document.getElementById("cloudStatus").textContent =
+"الوضع المحلي: لم يتم إعداد الاتصال السحابي بعد.";
+
+}
+
+</script>
+
+</body>
+</html>
